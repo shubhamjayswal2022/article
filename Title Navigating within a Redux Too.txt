@@ -1,0 +1,70 @@
+**Title: Navigating within a Redux Toolkit Action after AsyncThunk Fulfillment in React JS**
+
+Have you ever wondered if it's possible to navigate to another screen within a Redux Toolkit action after an AsyncThunk operation has been successfully completed in a React JS application? In this article, we'll guide you through the steps to achieve this. 
+
+**Step 1: Create a Navigation Module**
+
+Start by creating a `navigation.ts` file at a global level and add the following code:
+
+import * as React from "react";
+
+export const navigationRef: React.RefObject<any> = React.createRef();
+
+export default function navigate(name: any) {
+  navigationRef.current(name);
+}
+
+In this step, we're setting up a global navigation reference using React's `createRef` and a `navigate` function to perform screen navigation.
+
+**Step 2: Integrate Navigation in your App**
+
+Next, you'll need to make changes to your `app.tsx` file:
+
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import navigate, { navigationRef } from "./navigation";
+
+function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigationRef.current = navigate;
+  }, [navigate]);
+
+  return (
+    <div>
+      {/* Your routes container */}
+    </div>
+  );
+}
+
+export default App;
+
+In this step, we import the `navigate` function and connect it to your app using React Router's `useNavigate`. This allows you to update the navigation reference whenever it changes.
+
+**Step 3: Implement Navigation in Redux Actions**
+
+Now, you can use the `navigate` function within your Redux actions or services:
+
+import { AxiosResponse } from "axios";
+import axiosInstance from "./axiosInstance";
+import navigate from "./navigation";
+
+export const addJobDescription = async (data) => {
+  try {
+    const response: AxiosResponse = await axiosInstance.post(
+      "/api/jobs/add",
+      data
+    );
+
+    navigate("/verifyPage"); // Navigate to the desired screen
+  } catch (error) {
+    throw error?.response?.data?.message;
+  }
+};
+
+In this final step, you import the `navigate` function and use it within your Redux action to navigate to the desired screen once your AsyncThunk operation has been successfully completed.
+
+Congratulations, you've successfully integrated navigation within your Redux Toolkit action. This enables you to create more dynamic and interactive user experiences in your React JS application.
+
+We hope you find this guide helpful in enhancing your application's functionality. Happy coding!
